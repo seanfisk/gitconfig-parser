@@ -6,8 +6,10 @@ from __future__ import print_function
 
 import argparse
 import sys
+from pprint import pprint
 
 from gitconfig_parser import metadata
+from gitconfig_parser.parser import parse_file
 
 
 def _main(argv):
@@ -40,10 +42,20 @@ URL: <{url}>
         '-v', '--version',
         action='version',
         version='{0} {1}'.format(metadata.project, metadata.version))
+    arg_parser.add_argument(
+        'file',
+        metavar='FILE',
+        type=file)
 
-    arg_parser.parse_args(args=argv[1:])
+    args = arg_parser.parse_args(args=argv[1:])
 
-    print(epilog)
+    ini_file_list = parse_file(args.file).asList()
+
+    pprint(ini_file_list)
+    for section, properties in ini_file_list:
+        for key, value in properties:
+            print('{0}.{1}={2}'.format(
+                section, key, value))
 
     return 0
 
